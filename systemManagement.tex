@@ -1,0 +1,51 @@
+\documentclass{article}
+ 
+\begin{document}
+\begin{enumerate} 
+
+    \item OpenVPN:\\
+
+    Connettersi tramite OpenVPN ed esplorare l’interfaccia di gestione del proprio
+    server (10.19.0.101-112) (user: root password: superuser) e documentare
+    azioni e informazioni disponibili.
+    (Gli account OpenVPN sono gestiti dal docente, che distribuisce ad ogni gruppo
+    un certificato personalizzato da importare nel proprio OpenVPN client – esempio
+    di nome di un certificato: SystemManagement-udp-1194-grp5.ovpn e
+    SystemManagement-udp-1194-grp5.p12).\\
+
+   Installazione OpenVPN - Ubuntu x64:\\
+
+    \begin{enumerate}
+        \item apt-get install openvpn \\ 
+        Installiamo openvpn sulla nostra macchina
+        \item openvpn --version \\
+        Verifichiamo che l'installazione sia andata a buon fine
+        \item openvpn --config client.ovpn \\
+        Ci posizioniamo nella cartella (unzippata) che abbiamo scaricato da ICorsi,
+        avviamo il client con il certificato corretto (.ovpn) che ci è stato fornito.\\
+
+    \end{enumerate}
+
+    Problematiche: \\
+    Il server mette a disposizione una finestra con la quale è possibile lavorare in modalità
+    grafica stile desktop remoto. Tale applicazione fa scaricare un file .JNLP dal server
+    (lanciando il controllo renoto dalla console di gestione). Qualora il certificato di
+    sicurezza fosse scaduto, si dovrà procedere a creare il trust al server nella macchina
+    client (che altrimenti ne blocca l’esecuzione): aggiungere l’IP del server nelle Exception
+    Site List di Java. \\
+    Utilizzando OpenJDK non è possibile sfruttare l'interfaccia grafica di gestione, per questo 
+    motivo abbiamo dovuto installare Oracle JRE.
+
+    Installazione OpenVPN - Windows 10 x64:\\
+
+
+    \item Installazione di VMWare: \\
+    Dopo esserci collegati all'interfaccia di gestione della macchina, sulla scheda abbiamo
+    Remot Control abbiamo scaricato il file .JNLP ed attraverso la sua esecuzione
+    abbiamo installato l'ipervisor: abbiamo settato un Ip statico pubblico in modo da non dover
+    accedere ogni volta tramite VPN. \\
+    Abbiamo utilizzato per installare VMWare una chiavete collegata direttamente al server.
+    
+    \item \dots 
+    \end{enumerate}
+\end{document}
