@@ -116,6 +116,64 @@ Il server ESX include un microkernel che si interfaccia direttamente con la macc
     \item Parallels (Linux/Mac/Windows)
     \item QEMU (Linux)
     \item Windows Virtual PC (Windows)
-
 \end{enumerate}
+
+\section{Esercitazione 02}
+
+\begin{figure}[H]
+    \center
+    \includegraphics[scale=0.3]{images/s2.png}
+    \caption{Schema di rete base}\label{fig:1}
+\end{figure}
+
+Sulla scheda virtual machine dell'interfaccia pubblica del server abbiamo cliccato su Create / Register VM
+per uplodare un'immagine di una nuova macchina virtuale \\ \\
+Abbiamo caricato: \\
+kali Linux  \\
+Windows server 2012 \\
+Windows 10 x64 \\
+
+\begin{figure}[H]
+    \center
+    \includegraphics[scale=0.3]{images/schemaEs2.jpg}
+    \caption{Schema di rete esercitazione 2}\label{fig:1}
+\end{figure}
+
+\noindent Nella foto possiamo osservare un virtual switch (quello verde) collegato ad un port group(verde)
+che sono quelli che abbiamo già, l'obiettivo dell'esercitazione è quello di creare un'altro virtual switch collegato all'interfaccia
+LAN e creare un port group nuovo collegato al nuovo virtual switch. I port group non sono altro che un'astrazione ad un livello più alto degli switch,
+su di essi possono risiedere le VLAN.
+Dobbiamo installare prima delle macchine anche un firewall che sarà collegato ai port group con due interfacce, una LAN e una WAN (è pubblica).
+Le macchina saranno poi collegate al nostro nuovo port group.
+firewall deve avere IP 236. Le nuove macchina installate verranno collegate al nuovo port group.
+Sul firewall bisogna installare un client VPN.
+L'obiettivo finale dell'esercitazione è quello di virtualizzare l'intera rete collegate alle interfacce LAN e WAN del server.
+Come ultimo passaggio dobbiamo spostare l’interfaccia di gestione di ESXi all’interno della rete (LAN).
+
+\subsection{Firewall utilizzato}
+pfSense è una distribuzione software open source basata su FreeBSD adatta per essere utilizzata come firewall/router. 
+Ha lo scopo di fornire un firewall potente, sicuro e completamente configurabile utilizzando l'hardware di un comune PC. Nel cuore del sistema c'è FreeBSD e il firewall PF (Packet Filter) in prestito da OpenBSD da cui deriva appunto il suo nome, che ha il significato di "dare maggior senso per l'utente finale a PF".
+
+Possiede le funzionalità basilari di un firewall di qualità:
+
+\subsubsection{Funzionalità}
+\begin{itemize}
+    \item Stateful Firewall con controllo granulare e possibilità di funzionare in maniera trasparente al layer 2 (in bridging)
+    \item Network address translation
+    \item HA (High Availability): grazie a CARP permette di configurare due firewall su due macchine identiche per replicarsi e autosostituirsi nel caso di guasto di una delle due (il software pfsync si occupa di replicare lo stato firewall, la tabella delle connessioni e le regole del firewall, permettendo di passare al secondo firewall senza che le connessioni attive di rete cadano)
+    \item Load Balancing: bilanciamento del carico di lavoro tra due o più server che si trovano dietro a pfSense (utilizzato normalmente per web server, mail server, ecc.)
+    \item VPN server, su protocolli IPsec, OpenVPN e PPTP.
+    \item PPPoE server
+    \item Grafici RRD ed informazioni sullo stato in tempo reale.
+    \item Captive portal
+    \item Gestione uPnP e DNS dinamici
+\end{itemize}
+Grazie all'aggiunta di ulteriori moduli è possibile estendere le funzionalità di base ed integrarne di evolute come web proxying (con Squid), url filtering (Squidguard, DansGuardian), IDS (Snort) , antivirus (HAVP) ed altre ancora, fino alla gestione di messaggistica VoIP con FreeSWITCH. 
+
+\begin{figure}[H]
+    \center
+    \includegraphics[scale=0.3]{images/tabecomp.png}
+    \caption{Schema di rete esercitazione 2}\label{fig:1}
+\end{figure}
+
 \end{document}
