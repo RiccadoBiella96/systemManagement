@@ -4,6 +4,7 @@
 \usepackage{listings}
 \usepackage{amsfonts}
 \usepackage{amssymb}
+\usepackage{xcolor}
 \usepackage{graphicx}
 \usepackage{titling}
 \usepackage[utf8]{inputenc}
@@ -37,6 +38,10 @@
 \thispagestyle{empty}
 \pagebreak
 
+\tableofcontents
+\lstset{language=C++}
+\pagebreak
+
 \section{Esercitazione 01}
 
 \begin{figure}[H]
@@ -55,7 +60,7 @@ Il server utilizzato per le esercitazioni può contenere fino a quattro nodi, co
 \subsection{Hardware utilizzato}
 Ad ogni gruppo è stata assegnata la gestione di un nodo all'interno del rack, esso dispone di un disco rigido, un SSD ed una periferica USB mediante il quale sarà possibile installare un hypervisor sul server.
 
-\subsection{Interfaccia di gestione}ee
+\subsection{Interfaccia di gestione}
 L'interfaccia di management del server, permette la gestione di numerosi aspetti della macchina, tra cui il controllo remoto, che utilizzaremo per lavorare sul server senza essere fisicamente presenti in laboratorio.
 L'interfaccia di gestione è raggiungibile all'indirizzo IP: 10.19.0.106, a seguito di una connessione tramite client vpn, con le credenziali seguenti: \\  \textbf{username:} grp6 \\ \textbf{password:} System3m.Man\_grp6
 \begin{figure}[H]
@@ -87,7 +92,7 @@ SystemManagement-udp-1194-grp5.p12).
 \subsubsection{Problematiche} 
     Il server mette a disposizione una finestra con la quale è possibile lavorare in modalità
     grafica stile desktop remoto. Tale applicazione fa scaricare un file .JNLP dal server
-    (lanciando il controllo renoto dalla console di gestione). Qualora il certificato di
+    (lanciando il controllo remoto dalla console di gestione). Qualora il certificato di
     sicurezza fosse scaduto, si dovrà procedere a creare il trust al server nella macchina
     client (che altrimenti ne blocca l’esecuzione): aggiungere l’IP del server nelle Exception
     Site List di Java. Utilizzando OpenJDK non è possibile sfruttare l'interfaccia grafica di gestione, per questo 
@@ -105,10 +110,9 @@ Il server ESX include un microkernel che si interfaccia direttamente con la macc
 \end{enumerate}
 
 \subsubsection{Installazione di VMWare} 
-    Dopo esserci collegati all'interfaccia di gestione della macchina, sulla scheda abbiamo
-    Remot Control abbiamo scaricato il file .JNLP ed attraverso la sua esecuzione
-    abbiamo installato l'ipervisor: abbiamo settato un Ip statico pubblico in modo da non dover
-    accedere ogni volta tramite VPN. Abbiamo utilizzato per installare VMWare una chiavete collegata direttamente al server.
+    Dopo esserci collegati all'interfaccia di gestione della macchina, sulla scheda Remot Control abbiamo scaricato il file .JNLP ed attraverso la sua esecuzione
+    abbiamo installato l'hypervisor: abbiamo settato un IP statico pubblico in modo da non dover
+    accedere ogni volta tramite VPN. Abbiamo utilizzato per installare VMWare una periferica USB collegata direttamente al server.
     
 \subsubsection{Altre opzioni di virtualizzazione}
 \begin{enumerate}
@@ -126,37 +130,43 @@ Il server ESX include un microkernel che si interfaccia direttamente con la macc
     \caption{Schema di rete base}\label{fig:1}
 \end{figure}
 
-Sulla scheda virtual machine dell'interfaccia pubblica del server abbiamo cliccato su Create / Register VM
-per uplodare un'immagine di una nuova macchina virtuale \\ \\
-Abbiamo caricato: \\
-kali Linux  \\
-Windows server 2012 \\
-Windows 10 x64 \\
+\subsection{Obiettivo e definizione di una struttura di rete}
 
 \begin{figure}[H]
     \center
-    \includegraphics[scale=0.3]{images/schemaEs2.jpg}
-    \caption{Schema di rete esercitazione 2}\label{fig:1}
+    \includegraphics[scale=0.5]{images/lavagna.png}
+    \caption{Struttura di rete}\label{fig:1}
 \end{figure}
 
-\noindent Nella foto possiamo osservare un virtual switch (quello verde) collegato ad un port group(verde)
-che sono quelli che abbiamo già, l'obiettivo dell'esercitazione è quello di creare un'altro virtual switch collegato all'interfaccia
-LAN e creare un port group nuovo collegato al nuovo virtual switch. I port group non sono altro che un'astrazione ad un livello più alto degli switch,
+\noindent 
+L'obiettivo finale dell'esercitazione è quello di virtualizzare l'intera rete collegata alle interfacce LAN e WAN del server.
+Nell' immagine è possibile osservare lo schema di rete che vogliamo realizzare.
+Nella parte superiore "Phisical", troviamo il server, con le sue interfacce MAN, LAN e WAN.
+Nella parte inferiore "Virtual" definiamo l'infrastruttura di rete che vogliamo virtualizzare. Si osservano due virtual switch, collegati a due
+port group, allo stato attuale disponiamo solo di un VS e di un PG, perciò dovremo creare un nuovo VS
+collegato all'interfaccia LAN e creare un nuovo port group nuovo collegato al VS creato.
+I port group non sono altro che un'astrazione ad un livello più alto degli switch,
 su di essi possono risiedere le VLAN.
-Dobbiamo installare prima delle macchine anche un firewall che sarà collegato ai port group con due interfacce, una LAN e una WAN (è pubblica).
-Le macchina saranno poi collegate al nostro nuovo port group.
-firewall deve avere IP 236. Le nuove macchina installate verranno collegate al nuovo port group.
-Sul firewall bisogna installare un client VPN.
-L'obiettivo finale dell'esercitazione è quello di virtualizzare l'intera rete collegate alle interfacce LAN e WAN del server.
+Nel corso dell'esercitazione procederemo ad installare alcune macchine virtuali client e server e un un firewall che sarà collegato ai port group con due interfacce, una LAN e una WAN (pubblica).
+Le macchine virtualizzate saranno poi collegate al nostro nuovo port group. L'indirizzo IP assegnato al nostro firewall
+finisce in .236. Sul firewall installeremo poi un client VPN.
 Come ultimo passaggio dobbiamo spostare l’interfaccia di gestione di ESXi all’interno della rete (LAN).
 
+% Sulla scheda virtual machine dell'interfaccia pubblica del server abbiamo cliccato su Create / Register VM
+% per uplodare un'immagine di una nuova macchina virtuale.
+
 \subsection{Firewall utilizzato}
-pfSense è una distribuzione software open source basata su FreeBSD adatta per essere utilizzata come firewall/router. 
+PFSense è una distribuzione software open source basata su FreeBSD adatta per essere utilizzata come firewall/router. 
 Ha lo scopo di fornire un firewall potente, sicuro e completamente configurabile utilizzando l'hardware di un comune PC. Nel cuore del sistema c'è FreeBSD e il firewall PF (Packet Filter) in prestito da OpenBSD da cui deriva appunto il suo nome, che ha il significato di "dare maggior senso per l'utente finale a PF".
 
-Possiede le funzionalità basilari di un firewall di qualità:
+
+\subsubsection{Versione utilizzata e requisiti minimi di sistema}
+\textbf{Versione:} PFSense \\
+\textbf{Memoria RAM:} 512 MB
 
 \subsubsection{Funzionalità}
+Possiede le funzionalità basilari di un firewall di qualità:
+
 \begin{itemize}
     \item Stateful Firewall con controllo granulare e possibilità di funzionare in maniera trasparente al layer 2 (in bridging)
     \item Network address translation
@@ -170,10 +180,35 @@ Possiede le funzionalità basilari di un firewall di qualità:
 \end{itemize}
 Grazie all'aggiunta di ulteriori moduli è possibile estendere le funzionalità di base ed integrarne di evolute come web proxying (con Squid), url filtering (Squidguard, DansGuardian), IDS (Snort) , antivirus (HAVP) ed altre ancora, fino alla gestione di messaggistica VoIP con FreeSWITCH. 
 
+\subsection{Installazione Windows Server 2012}
+\subsubsection{Versione utilizzata e requisiti minimi di sistema}
+\textbf{Versione:} Windows Server 2012 ???\\
+\textbf{Memoria RAM:} 2 GB \\
+\textbf{Hard Disk:} 60 GB
+
+\subsubsection{Tabella comparativa delle versioni}
 \begin{figure}[H]
     \center
     \includegraphics[scale=0.3]{images/tabecomp.png}
-    \caption{Schema di rete esercitazione 2}\label{fig:1}
+    \caption{Versioni Windows Server 2012}\label{fig:1}
 \end{figure}
+
+\subsection{Installazione di un sistema Windows 10}
+\subsubsection{Versione utilizzata e requisiti minimi di sistema}
+\textbf{Versione:} Windows 10 ???\\
+\textbf{Memoria RAM:} 2 GB \\
+\textbf{Hard Disk:} 60 GB
+
+\subsection{Installazione di un sistema Linux}
+\subsubsection{Versione utilizzata e requisiti minimi di sistema}
+\textbf{Versione:} Kali Linux (con gnome) \\
+\textbf{Memoria RAM:} 2048 MB \\
+\textbf{Hard Disk:} 20 GB
+
+\subsection{Impostazione avvio automatico}
+
+\subsection{Configurazione disco di rete}
+
+\textcolor{red}{NON ABBIAMO FINITO ANCORA, ALLO STATO ATTUALE ABBIAMO INSTALLATO LE MACCHINE VIRTUALI}
 
 \end{document}
