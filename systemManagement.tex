@@ -154,7 +154,19 @@ Come ultimo passaggio dobbiamo spostare l’interfaccia di gestione di ESXi all�
 
 % Sulla scheda virtual machine dell'interfaccia pubblica del server abbiamo cliccato su Create / Register VM
 % per uplodare un'immagine di una nuova macchina virtuale.
-
+\subsection{Rete LAN}
+\begin{figure}[H]
+    \center
+    \includegraphics[scale=0.52]{images/lan.png}
+    \caption{Configurazione di rete LAN}\label{fig:1}
+\end{figure}
+\vspace{0.7 cm}
+\subsection{Rete WAN}
+\begin{figure}[H]
+    \center
+    \includegraphics[scale=0.52]{images/wan.png}
+    \caption{Configurazione di rete WAN}\label{fig:1}
+\end{figure}
 \subsection{Firewall utilizzato}
 PFSense è una distribuzione software open source basata su FreeBSD adatta per essere utilizzata come firewall/router. 
 Ha lo scopo di fornire un firewall potente, sicuro e completamente configurabile utilizzando l'hardware di un comune PC. Nel cuore del sistema c'è FreeBSD e il firewall PF (Packet Filter) in prestito da OpenBSD da cui deriva appunto il suo nome, che ha il significato di "dare maggior senso per l'utente finale a PF".
@@ -193,9 +205,16 @@ Grazie all'aggiunta di ulteriori moduli è possibile estendere le funzionalità 
     \caption{Versioni Windows Server 2012}\label{fig:1}
 \end{figure}
 
+\subsection{Configurazione dei servizi}
+\begin{itemize}
+    \item \textbf{Active Directory: } Attraverso l'active directory abbiamo creato gli utenti del sistema e dei gruppi per l'assegnamento dei permessi (a livello di sistema operativo). Abbiamo poi creato cartelle per i profili utente sul disco C e aggiunto questi ultimi all'active directory.
+    \item \textbf{Domain Controller: } Abbiamo creato il dominio korn.forest nel quale abbiamo inserito i vari client.
+    \item \textbf{DHCP: } Abbiamo settato il server come DHCP, è stato necessario impostare l'ip range per gli indirizzi da distribuire, un default gateway e un default dns che corrisponde al server stesso. Inoltre è necessario ricordarsi di disabilitarlo dal firewall.
+    \item \textbf{DNS: } Abbiamo creato un DNS associato al dominio appena creato. Nel nostro caso il DNS si occupa di eseguire un semplice forward, non introduce altre regole.
+\end{itemize}
 \subsection{Installazione di un sistema Windows 10}
 \subsubsection{Versione utilizzata e requisiti minimi di sistema}
-\textbf{Versione:} Windows 10 ???\\
+\textbf{Versione:} Windows 10 Home\\
 \textbf{Memoria RAM:} 2 GB \\
 \textbf{Hard Disk:} 60 GB
 
@@ -206,9 +225,76 @@ Grazie all'aggiunta di ulteriori moduli è possibile estendere le funzionalità 
 \textbf{Hard Disk:} 20 GB
 
 \subsection{Impostazione avvio automatico}
+Attraverso il menù actions delle VM abbiamo abilitato il riavvio automatico nel caso che il server fisico venga
+riavviato.
+\section{Esercitazione 03}
+\subsection{Creazione di una nuova macchina WinClient\_02}
+Abbiamo rinominato la macchina MS Windows client in WinClient\_01, e dopo aver copiato la macchina WinClient\_01, l'abbiamo clonato creando un nuovo client WinClient\_02.
 
-\subsection{Configurazione disco di rete}
-
-\textcolor{red}{NON ABBIAMO FINITO ANCORA, ALLO STATO ATTUALE ABBIAMO INSTALLATO LE MACCHINE VIRTUALI}
+\subsection{Creazione di nuovi gruppi utente}
+Abbiamo creato nuovi gruppi utente, come segue:
+\begin{itemize}
+    \item UsrGroup\_A (usr01, usr02)
+    \item UsrGroup\_B (usr01, usr02, usr03)
+    \item UsrGroup\_C (usr04, UsrGroup\_A)
+\end{itemize}
+Utilizzando i client descritti in precedenza abbiamo verificato il funzionamento dei profili utenti appena creati.
+\subsection{Installazione di un sistema di backup}
+\textcolor{red}{MANCA QUESTO PUNTO DELL'ESERCITAZIONE 3}.
+\section{Esercitazione 04}
+\begin{figure}[H]
+    \center
+    \includegraphics[scale=0.45]{images/es4.png}
+    \caption{Configurazione di rete}\label{fig:1}
+\end{figure}
+L’infrastruttura realizzata sinora comprende una rete LAN e una rete WAN. Ad ognuna è
+assegnato un port switch virtuale che permette di creare la rete condivisa in VMWare dalle
+macchine virtualizzate e da quelle esterne.
+Abbiamo realizzato una nuova rete, una DMZ, nel quale abbiamo esposto un server di servizi
+web. Abbiamo aggiunto al FW un' interfaccia ethernet e l' abbiamo chiamata DMZ, abbiamo aggiunto poi un virtual switch e gli abbiamo associato l'interfaccia appena creata.
+\subsection{Sistema di monitoring utilizzato: Nagios}
+Nagios è un'applicazione open source per il monitoraggio di computer e risorse di rete. La sua funzione base è quella di controllare nodi, reti e servizi specificati, avvertendo quando questi non garantiscono il loro servizio o quando ritornano attivi.In origine Nagios è stato sviluppato per Linux, ma può funzionare correttamente anche su altre varianti di Unix.
+\subsubsection{Caratteristiche}
+\begin{itemize}
+    \item monitoraggio di servizi di rete (SMTP, POP3, HTTP, NNTP, ICMP, SNMP, FTP, SSH);
+    \item monitoraggio delle risorse di sistema (carico del processore, uso dell'hard disk, log di sistema sulla maggior parte dei sistemi operativi, anche per Microsoft Windows);
+    \item monitoraggio remoto supportato attraverso tunnel SSH o SSL;
+    \item semplici plugin che permettono agli utenti di sviluppare facilmente nuovi controlli per i servizi in base alle proprie esigenze, usando bash, C++, Perl, Ruby, Python, PHP, C\#, ecc.;
+    \item controlli paralleli sui servizi;
+    \item capacità di definire gerarchie di nodi di rete usando nodi "parent", permettendo la distinzione tra nodi che sono down e nodi non raggiungibili;
+    \item notifiche quando l'applicazione riscontra problemi o la loro risoluzione (via email, cercapersone, SMS, o con altri sistemi per mezzo di plugin aggiuntivi);
+    \item capacità di definire "event handler", ovvero azioni automatiche che vengono attivate all'apparire o alla risoluzione di un problema;
+    \item rotazione automatica dei file di log;
+    \item supporto per l'implementazione di monitoring ridondante;
+    \item interfaccia web opzionale per la visualizzazione dell'attuale stato, notifiche, storico dei problemi, file di log, ecc.
+\end{itemize}
+\subsection{Altri sistemi di monitoring}
+\begin{figure}[H]
+    \center
+    \includegraphics[scale=0.45]{images/tabC.png}
+    \caption{Sistemi di monitoring}\label{fig:1}
+\end{figure}
+\subsection{Punto 2-3-4}
+\textcolor{red}{MANCANO QUESTI PUNTI DELL'ESERCITAZIONE 4}.
+\section{Esercitazione 05}
+Attivazione di una SAN e integrazione nel sistema sviluppato in laboratorio.
+\subsection{Protocollo iSCSI}
+In telecomunicazioni ed elettronica iSCSI (sta per "Internet SCSI") è un protocollo di comunicazione che permette di inviare comandi a dispositivi di memoria SCSI fisicamente collegati a server e/o altri dispositivi remoti (come ad esempio NAS o SAN). È un protocollo molto utilizzato in ambienti SAN poiché permette l'archiviazione dei dati su dischi virtuali, collegati attraverso la rete, dando l'illusione di disporre localmente di un disco fisico che invece si trova in realtà su un dispositivo di archiviazione remoto.
+Il client utilizza quindi un driver, detto initiator, che consente di inviare all'host dove sono fisicamente ospitati i dischi, detto target, i comandi che consentono di leggere e scrivere il disco virtuale. L'initiator tipicamente si identifica tramite un codice alfanumerico, detto IQN (acronimo inglese di "iSCSI Qualified Name", in italiano "Nome Qualificato iSCSI") al quale può essere associata una policy di accesso basata sull'indirizzo IP mittente.
+Il protocollo iSCSI supporta inoltre l'autenticazione tramite il protocollo CHAP.
+\subsubsection{iSCSI vs Fibre Channel over Ethernet}
+La differenza principale è che il protocollo Fibre Channel consente l'impacchettamento su TCP/IP, e attraverso l'infrastruttura di rete esistente rende possibile l'utilizzo di dispositivi a distanza.
+Di seguito riportiamo i punti di forza delle due soluzioni:
+\begin{itemize}
+    \item iSCSI è sicuramente più adatto per le soluzioni di fascia bassa non richiedendo nessuna implementazione particolare della rete ethenet e operando su TCP/IP permette il suo utilizzo anche in ambito geografico. Esistono, inoltre, molte implementazioni software di server iSCSI e praticamente tutti i sistemi operativi attuale hanno un supporto per connessioni client iSCSI.
+    \item FCoE è stato pensato per i CED in ambito locale dove la presenza di infrastrutture Fibre Channel è ampia. FCoE consente di utilizzare le stesse utility e funzionalità utilizzate su Fibre Channel oltre a fornire tutto il supporto per lo zoning. FCoE non ha bisogno di uno stack TCP/IP ed è quindi molto più efficiente di iSCSI.
+\end{itemize}
+\begin{figure}[H]
+    \center
+    \includegraphics[scale=0.4]{images/fig1.png}
+    \caption{Sistemi di storage SAN}\label{fig:1}
+\end{figure}
+\subsection{Tabella comparativa dei sistemi di storage}
+\textcolor{red}{MANCA QUESTO PUNTO DELL'ESERCITAZIONE 5}.
 
 \end{document}
